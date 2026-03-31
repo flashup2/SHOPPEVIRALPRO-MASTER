@@ -1,5 +1,11 @@
 {
   "version": 2,
+  "functions": {
+    "api/shopee.js": {
+      "runtime": "nodejs24.x",
+      "maxDuration": 10
+    }
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/videx-app.html" }
   ]
