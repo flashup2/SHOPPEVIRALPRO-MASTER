@@ -17,18 +17,19 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: '"url" obrigatório' });
   }
 
-  let rawQuery;
+  let payload;
+
   if (action === 'search') {
-    rawQuery = `{ productOfferV2(listType: 0, sortType: ${Number(sortType)}, limit: ${Number(limit)}, keyword: "${keyword}") { nodes { itemId shopId productName priceMin priceMax commissionRate commission sales imageUrl videoUrl shopName offerLink productLink } pageInfo { hasNextPage endCursor } } }`;
+    // String raw igual ao exemplo Python que funciona — sem JSON.stringify
+    payload = `{ "query": "{ productOfferV2(listType: 0, sortType: ${Number(sortType)}, limit: ${Number(limit)}, keyword: \\"${keyword}\\") { nodes { itemId shopId productName priceMin priceMax commissionRate commission sales imageUrl videoUrl shopName offerLink productLink } pageInfo { hasNextPage endCursor } } }", "operationName": null, "variables": null }`;
   } else if (action === 'generate_link') {
-    rawQuery = `{ generateShortLink(input: { originUrl: "${url}", subId: "videx" }) { shortLink longLink } }`;
+    payload = `{ "query": "{ generateShortLink(input: { originUrl: \\"${url}\\", subId: \\"videx\\" }) { shortLink longLink } }", "operationName": null, "variables": null }`;
   } else {
     return res.status(400).json({ error: `Ação inválida: ${action}` });
   }
 
-  // Monta o objeto, serializa e remove quebras de linha — igual ao exemplo Python que funciona
-  const bodyObj = { query: rawQuery, operationName: null, variables: null };
-  const payload = JSON.stringify(bodyObj).replace(/\n/g, '');
+  // Remove quebras de linha — igual ao Python: payload.replace('\n', '')
+  payload = payload.replace(/\n/g, '');
 
   const timestamp = String(Math.floor(Date.now() / 1000));
 
@@ -43,7 +44,7 @@ module.exports = async function handler(req, res) {
         'Content-Type':  'application/json',
         'Authorization': `SHA256 Credential=${APP_ID},Timestamp=${timestamp},Signature=${sign}`,
       },
-      body: payload,
+      body: payload,  // string raw — igual ao Python
     });
 
     const text = await upstream.text();
