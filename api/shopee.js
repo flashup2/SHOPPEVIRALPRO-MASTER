@@ -5,52 +5,40 @@ const APP_ID      = '18341840528';
 const SECRET      = 'TQQACKSDJ4QUYI2HPNBBA5IWTSFVUCA3';
 const SHOPEE_BASE = 'https://open-api.affiliate.shopee.com.br/graphql';
 
-function generateSign(timestamp, payload) {
-  // Formato correto Shopee Affiliate: SHA256(APP_ID + timestamp + payload + SECRET)
-  const base = APP_ID + timestamp + payload + SECRET;
-  return crypto.createHash('sha256').update(base).digest('hex');
-}
-
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const {
-    action,
-    keyword  = 'achados',
-    limit    = '20',
-    sortType = '2',
-    url,
-  } = req.query;
+  const { action, keyword = 'achados', limit = '20', sortType = '2', url } = req.query;
 
   if (action === 'generate_link' && !url) {
-    return res.status(400).json({ error: 'Parâmetro "url" é obrigatório para generate_link' });
+    return res.status(400).json({ error: '"url" obrigatório' });
   }
 
-  const queries = {
-    search: {
-      query: `{ productOfferV2(listType: 0, sortType: ${Number(sortType)}, limit: ${Number(limit)}, keyword: "${keyword}") { nodes { itemId shopId productName priceMin priceMax commissionRate commission sales imageUrl videoUrl shopName offerLink productLink } pageInfo { hasNextPage endCursor } } }`
-    },
-    generate_link: {
-      query: `{ generateShortLink(input: { originUrl: "${url}", subId: "videx" }) { shortLink longLink } }`
-    },
-  };
+  let query;
+  if (action === 'search') {
+    query = `{"query":"{productOfferV2(listType:0,sortType:${Number(sortType)},limit:${Number(limit)},keyword:\\"${keyword}\\"){nodes{itemId shopId productName priceMin priceMax commissionRate commission sales imageUrl videoUrl shopName offerLink productLink}pageInfo{hasNextPage endCursor}}}"}`;
+  } else if (action === 'generate_link') {
+    query = `{"query":"{generateShortLink(input:{originUrl:\\"${url}\\",subId:\\"videx\\"}){shortLink longLink}}"}`;
+  } else {
+    return res.status(400).json({ error: `Ação inválida: ${action}` });
+  }
 
-  const body = queries[action];
-  if (!body) return res.status(400).json({ error: `Ação inválida: ${action}` });
-
-  const payload   = JSON.stringify(body);
+  // Payload é a string JSON literal — usada tanto no body quanto na assinatura
+  const payload   = query;
   const timestamp = Math.floor(Date.now() / 1000).toString();
-  const sign      = generateSign(timestamp, payload);
+
+  // SHA256(AppId + Timestamp + Payload + Secret) — sem separadores
+  const base = APP_ID + timestamp + payload + SECRET;
+  const sign = crypto.createHash('sha256').update(base, 'utf8').digest('hex');
 
   try {
     const upstream = await fetch(SHOPEE_BASE, {
       method: 'POST',
       headers: {
-        'Content-Type':  'application/json',
+        'Content-Type': 'application/json',
         'Authorization': `SHA256 Credential=${APP_ID},Timestamp=${timestamp},Signature=${sign}`,
       },
       body: payload,
