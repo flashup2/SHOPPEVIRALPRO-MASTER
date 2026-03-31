@@ -2,5 +2,9 @@
   "version": 2,
   "functions": {
     "api/shopee.js": { "runtime": "nodejs18.x" }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/shopee", "destination": "/api/shopee.js" },
+    { "source": "/(.*)", "destination": "/videx-app.html" }
+  ]
 }
