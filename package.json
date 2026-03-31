@@ -1,5 +1,8 @@
 {
   "name": "videx-proxy",
   "version": "1.0.0",
-  "engines": { "node": "18.x" }
+  "engines": { "node": "18.x" },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
 }
