@@ -17,34 +17,35 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: '"url" obrigatório' });
   }
 
-  let payload;
-
+  let queryStr;
   if (action === 'search') {
-    // String raw igual ao exemplo Python que funciona — sem JSON.stringify
-    payload = `{ "query": "{ productOfferV2(listType: 0, sortType: ${Number(sortType)}, limit: ${Number(limit)}, keyword: \\"${keyword}\\") { nodes { itemId shopId productName priceMin priceMax commissionRate commission sales imageUrl videoUrl shopName offerLink productLink } pageInfo { hasNextPage endCursor } } }", "operationName": null, "variables": null }`;
+    queryStr = `{\n  productOfferV2(listType: 0, sortType: ${Number(sortType)}, limit: ${Number(limit)}, keyword: "${keyword}") {\n    nodes {\n      itemId\n      shopId\n      productName\n      priceMin\n      priceMax\n      commissionRate\n      commission\n      sales\n      imageUrl\n      videoUrl\n      shopName\n      offerLink\n      productLink\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}`;
   } else if (action === 'generate_link') {
-    payload = `{ "query": "{ generateShortLink(input: { originUrl: \\"${url}\\", subId: \\"videx\\" }) { shortLink longLink } }", "operationName": null, "variables": null }`;
+    queryStr = `{\n  generateShortLink(input: { originUrl: "${url}", subId: "videx" }) {\n    shortLink\n    longLink\n  }\n}`;
   } else {
     return res.status(400).json({ error: `Ação inválida: ${action}` });
   }
 
-  // Remove quebras de linha — igual ao Python: payload.replace('\n', '')
-  payload = payload.replace(/\n/g, '');
+  // Payload: JSON com \n literais dentro da string query (como no exemplo da doc)
+  const payload = JSON.stringify({ query: queryStr });
 
   const timestamp = String(Math.floor(Date.now() / 1000));
 
-  // SHA256(AppId + Timestamp + Payload + Secret)
+  // factor = AppId + Timestamp + Payload + Secret (doc oficial)
   const factor = APP_ID + timestamp + payload + SECRET;
   const sign   = crypto.createHash('sha256').update(factor).digest('hex');
+
+  // Header exato da doc: SHA256 Credential=${AppId}, Timestamp=${Timestamp}, Signature=${signature}
+  const authHeader = `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${sign}`;
 
   try {
     const upstream = await fetch(SHOPEE_BASE, {
       method: 'POST',
       headers: {
-        'Content-Type':  'application/json',
-        'Authorization': `SHA256 Credential=${APP_ID},Timestamp=${timestamp},Signature=${sign}`,
+        'Content-Type': 'application/json',
+        'Authorization': authHeader,
       },
-      body: payload,  // string raw — igual ao Python
+      body: payload,
     });
 
     const text = await upstream.text();
