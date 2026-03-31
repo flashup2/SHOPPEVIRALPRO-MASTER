@@ -1,6 +1,5 @@
 // api/shopee.js — Vercel Serverless Function
 const crypto = require('crypto');
-const fetch  = require('node-fetch');
 
 const APP_ID      = '18341840528';
 const SECRET      = 'TQQACKSDJ4QUYI2HPNBBA5IWTSFVUCA3';
