@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "functions": {
+    "api/shopee.js": { "runtime": "nodejs18.x" }
+  }
+}

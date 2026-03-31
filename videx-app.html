@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Videx — Baixe. Use. Viralize.</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080808;--bg2:#111;--bg3:#181818;--bg4:#222;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#f2f2f2;--muted:#888;--muted2:#444;
+  --accent:#ff4d00;--accent2:#ff7a40;
+  --green:#00d084;--amber:#ffb800;--blue:#4da6ff;--purple:#b57bff;
+  --r:12px;--r2:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:15px;}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(8,8,8,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:56px;}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:18px;letter-spacing:-0.5px;}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo span{color:var(--accent);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.btn-login{background:transparent;border:1px solid var(--border2);color:var(--text);padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;}
+.btn-login:hover{border-color:var(--accent);color:var(--accent);}
+.plan-badge{color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--accent);}
+.plan-badge.premium{background:linear-gradient(135deg,#6c3bff,#b57bff);}
+.plan-badge.pack{background:linear-gradient(135deg,#00a86b,#00d084);}
+
+/* NAV */
+.nav-scroll{overflow-x:auto;display:flex;gap:8px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);scrollbar-width:none;}
+.nav-scroll::-webkit-scrollbar{display:none;}
+.nav-pill{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;white-space:nowrap;transition:all .2s;}
+.nav-pill:hover{border-color:var(--accent);color:var(--accent);}
+.nav-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* MAIN */
+.main{padding:0 0 80px;}
+.section{display:none;animation:fadeIn .25s ease;}
+.section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* HOME */
+.home-hero{background:linear-gradient(180deg,rgba(255,77,0,.08) 0%,transparent 100%);border-bottom:1px solid var(--border);padding:32px 16px 24px;text-align:center;}
+.home-hero .tag{display:inline-block;background:rgba(255,77,0,.15);color:var(--accent);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:12px;border:1px solid rgba(255,77,0,.25);}
+.home-hero h1{font-size:28px;font-weight:800;line-height:1.15;margin-bottom:10px;}
+.home-hero h1 em{color:var(--accent);font-style:normal;}
+.home-hero .sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:22px;}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;}
+.stat-card .val{font-size:20px;font-weight:800;color:var(--accent);}
+.stat-card .lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+.home-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:0 16px 16px;}
+.tool-shortcut{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .2s;text-align:center;}
+.tool-shortcut:hover{border-color:var(--border2);background:var(--bg3);}
+.tool-shortcut .ts-icon{font-size:24px;margin-bottom:6px;}
+.tool-shortcut .ts-name{font-size:12px;font-weight:600;}
+.tool-shortcut .ts-plan{font-size:10px;color:var(--muted);margin-top:2px;}
+.tool-shortcut.locked{opacity:.6;}
+.tool-shortcut.locked .ts-plan{color:var(--accent);}
+.plan-banner{margin:0 16px 12px;background:linear-gradient(135deg,rgba(255,77,0,.12),rgba(255,122,64,.08));border:1px solid rgba(255,77,0,.2);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.plan-banner .pb-label{font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;}
+.plan-banner .pb-plan{font-size:15px;font-weight:700;}
+.plan-banner .btn-upgrade-sm{background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+
+/* TOOL SECTIONS */
+.tool-section{padding:20px 16px;}
+.tool-header{margin-bottom:16px;}
+.tool-header h2{font-size:19px;font-weight:700;margin-bottom:4px;}
+.tool-header p{font-size:13px;color:var(--muted);line-height:1.5;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:12px;}
+.inp{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:12px 14px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border .2s;}
+.inp:focus{border-color:var(--accent);}
+.inp::placeholder{color:var(--muted);}
+textarea.inp{resize:vertical;min-height:90px;line-height:1.5;}
+.inp-label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block;}
+.btn-tool{width:100%;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:12px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.btn-tool:hover{background:var(--accent2);}
+.btn-tool:disabled{background:var(--muted2);cursor:not-allowed;color:var(--muted);}
+.btn-primary{background:var(--accent);color:#fff;border:none;padding:14px 20px;border-radius:12px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;width:100%;transition:all .2s;}
+.btn-primary:hover{background:var(--accent2);}
+.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border2);padding:13px 20px;border-radius:12px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;cursor:pointer;width:100%;transition:all .2s;}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.lock-overlay{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);padding:28px 20px;text-align:center;margin-bottom:12px;}
+.lock-overlay .lock-icon{font-size:36px;margin-bottom:12px;}
+.lock-overlay h3{font-size:16px;font-weight:700;margin-bottom:6px;}
+.lock-overlay p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5;}
+.btn-upgrade{background:linear-gradient(135deg,#ff4d00,#ff7a40);color:#fff;border:none;padding:13px 20px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;}
+.dl-hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;padding:10px 12px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent);}
+.type-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.type-pill{padding:7px 13px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;transition:all .2s;}
+.type-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* DOWNLOADER */
+.dl-platform-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+.dl-plat-btn{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;}
+.dl-plat-btn:hover,.dl-plat-btn.active{border-color:var(--accent);background:rgba(255,77,0,.06);}
+.dl-plat-btn .dpi{font-size:24px;margin-bottom:5px;}
+.dl-plat-btn .dpn{font-size:12px;font-weight:600;}
+
+/* RADAR / PRODUTO CARDS */
+.shopee-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:4px;}
+.produto-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s;cursor:pointer;}
+.produto-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.produto-media{position:relative;width:100%;aspect-ratio:1/1;background:var(--bg3);overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.produto-media img{width:100%;height:100%;object-fit:cover;}
+.has-video-badge{position:absolute;top:7px;left:7px;background:rgba(255,77,0,.92);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.comm-badge{position:absolute;top:7px;right:7px;background:rgba(0,208,132,.92);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);}
+.play-overlay span{width:38px;height:38px;background:rgba(255,255,255,.88);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.produto-info{padding:10px;}
+.produto-nome{font-size:12px;font-weight:600;line-height:1.4;margin-bottom:5px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.produto-price{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:3px;}
+.produto-comm{font-size:11px;color:var(--green);font-weight:600;margin-bottom:8px;}
+.produto-actions{display:flex;gap:5px;}
+.btn-sm{padding:6px 8px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--text);font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;font-weight:600;transition:all .2s;flex:1;text-align:center;}
+.btn-sm:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* SEARCH BAR */
+.search-bar{display:flex;gap:8px;margin-bottom:12px;}
+.search-bar .inp{margin:0;}
+.search-bar .btn-srch{background:var(--accent);color:#fff;border:none;padding:12px 16px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .2s;}
+.search-bar .btn-srch:hover{background:var(--accent2);}
+
+/* PRODUTO MODAL */
+.produto-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:300;display:flex;align-items:flex-end;justify-content:center;}
+.produto-modal-overlay.hidden{display:none;}
+.produto-modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;border-top:1px solid var(--border2);animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.pm-media{width:100%;background:var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.pm-media img{width:100%;max-height:320px;object-fit:cover;}
+.pm-media video{width:100%;max-height:320px;object-fit:cover;}
+.pm-media .pm-emoji{font-size:90px;padding:40px;}
+.pm-close{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.6);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.pm-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);}
+.pm-tab{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);border:none;background:transparent;font-family:'Outfit',sans-serif;transition:all .2s;border-bottom:2px solid transparent;}
+.pm-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.pm-body{padding:16px;}
+.pm-name{font-size:15px;font-weight:700;margin-bottom:6px;line-height:1.4;}
+.pm-price{font-size:22px;font-weight:800;color:var(--accent);margin-bottom:2px;}
+.pm-comm{font-size:13px;color:var(--green);font-weight:600;margin-bottom:8px;}
+.pm-shop{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.img-strip{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none;}
+.img-strip img{width:68px;height:68px;border-radius:8px;object-fit:cover;border:2px solid transparent;cursor:pointer;flex-shrink:0;}
+.img-strip img.active{border-color:var(--accent);}
+.link-box{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px;margin-bottom:12px;}
+.link-box .link-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.link-box .link-val{font-size:12px;color:var(--blue);word-break:break-all;line-height:1.5;}
+.leg-box{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px;line-height:1.7;white-space:pre-wrap;}
+.btn-copy-full{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:10px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;transition:all .2s;}
+.btn-copy-full:hover{border-color:var(--accent);color:var(--accent);}
+
+/* PACKS */
+.cat-pills{display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;margin-bottom:14px;scrollbar-width:none;}
+.cat-pills::-webkit-scrollbar{display:none;}
+.cat-pill{flex-shrink:0;padding:6px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-family:'Outfit',sans-serif;white-space:nowrap;transition:all .2s;}
+.cat-pill.active{background:var(--bg3);border-color:var(--border2);color:var(--text);}
+.packs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.pack-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.pack-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.pack-thumb{width:100%;aspect-ratio:9/16;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:42px;position:relative;}
+.pack-thumb .overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7),transparent);display:flex;align-items:flex-end;padding:10px;}
+.pack-thumb .overlay span{font-size:11px;font-weight:600;color:#fff;}
+.pack-info{padding:10px;}
+.pack-name{font-size:13px;font-weight:600;margin-bottom:3px;}
+.pack-cat{font-size:11px;color:var(--muted);}
+.btn-dl{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:8px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-top:8px;transition:all .2s;}
+.btn-dl:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* METADADOS */
+.drop-zone{border:2px dashed var(--border2);border-radius:12px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:rgba(255,77,0,.05);}
+.drop-zone .dz-icon{font-size:36px;margin-bottom:10px;}
+.drop-zone p{font-size:13px;color:var(--muted);}
+.drop-zone .dz-hint{font-size:11px;color:var(--muted2);margin-top:6px;}
+.meta-result{background:var(--bg3);border:1px solid var(--green);border-radius:12px;padding:16px;margin-top:12px;}
+.meta-item{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.meta-item:last-child{border-bottom:none;}
+.meta-item .mk{color:var(--muted);}
+.meta-item .mv.clean{color:var(--green);}
+
+/* CHAT */
+.chat-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:12px;}
+.chat-messages{height:320px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:var(--muted2) transparent;}
+.msg{max-width:85%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.6;}
+.msg.bot{background:var(--bg4);color:var(--text);align-self:flex-start;border-bottom-left-radius:3px;}
+.msg.user{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:3px;}
+.typing{display:flex;gap:4px;align-items:center;padding:2px 0;}
+.typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:typing .9s infinite;}
+.typing span:nth-child(2){animation-delay:.15s;}
+.typing span:nth-child(3){animation-delay:.3s;}
+@keyframes typing{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+.chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--bg2);}
+.chat-input-row .inp{margin:0;padding:10px 12px;}
+.chat-send{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-size:16px;flex-shrink:0;}
+.quick-pills{display:flex;gap:6px;flex-wrap:wrap;padding:10px 12px 0;}
+.quick-pill{padding:5px 11px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-family:'Outfit',sans-serif;font-size:11px;transition:all .2s;}
+.quick-pill:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ESTRATÉGIAS */
+.strat-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px;}
+.strat-card .stag{font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--accent);text-transform:uppercase;margin-bottom:8px;}
+.strat-card h3{font-size:15px;font-weight:700;margin-bottom:8px;}
+.strat-card p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px;}
+.strat-list{display:flex;flex-direction:column;gap:5px;}
+.strat-list li{font-size:13px;list-style:none;padding-left:16px;position:relative;line-height:1.5;}
+.strat-list li::before{content:'→';position:absolute;left:0;color:var(--accent);}
+
+/* PLANOS */
+.plans-wrap{padding:20px 16px;}
+.plan-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:12px;position:relative;}
+.plan-card.featured{border-color:var(--accent);}
+.plan-card .feat-badge{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.plan-card .pname{font-size:16px;font-weight:700;margin-bottom:4px;}
+.plan-card .pdesc{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.plan-card .pprice{font-size:28px;font-weight:800;margin-bottom:2px;}
+.plan-card .pprice .pold{font-size:14px;font-weight:400;color:var(--muted);text-decoration:line-through;margin-right:6px;}
+.plan-card .pper{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.plan-features{display:flex;flex-direction:column;gap:7px;margin-bottom:16px;}
+.plan-feat{font-size:13px;display:flex;align-items:center;gap:8px;}
+.plan-feat .ic{width:16px;height:16px;border-radius:50%;background:rgba(0,208,132,.15);display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;}
+.plan-feat.no .ic{background:rgba(255,77,0,.1);}
+.plan-feat.no{color:var(--muted);}
+
+/* SUPORTE */
+.support-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px;}
+.support-card h3{font-size:15px;font-weight:600;margin-bottom:6px;}
+.support-card p{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px;}
+.btn-wpp{background:#25d366;color:#fff;border:none;padding:12px 20px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;}
+.faq-item{border-bottom:1px solid var(--border);padding:14px 0;}
+.faq-q{font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.faq-q .arr{transition:transform .2s;font-size:12px;color:var(--muted);}
+.faq-item.open .arr{transform:rotate(180deg);}
+.faq-a{font-size:13px;color:var(--muted);line-height:1.6;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;}
+.faq-item.open .faq-a{max-height:200px;padding-top:10px;}
+.dep-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;}
+.dep-stars{color:var(--amber);font-size:13px;margin-bottom:8px;}
+.dep-text{font-size:13px;line-height:1.6;margin-bottom:10px;font-style:italic;}
+.dep-author{font-size:12px;color:var(--muted);font-weight:600;}
+
+/* ADMIN */
+.admin-section{padding:16px;}
+.admin-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+.admin-stat{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;}
+.admin-stat .as-val{font-size:22px;font-weight:800;}
+.admin-stat .as-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+.admin-table{width:100%;border-collapse:collapse;font-size:13px;}
+.admin-table th{font-size:11px;color:var(--muted);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);}
+.admin-table td{padding:10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.admin-table tr:last-child td{border-bottom:none;}
+.user-row-name{font-weight:600;font-size:13px;}
+.user-row-email{font-size:11px;color:var(--muted);}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+.badge.free{background:rgba(136,136,136,.15);color:#aaa;}
+.badge.premium{background:rgba(107,59,255,.15);color:#b57bff;}
+.badge.pack{background:rgba(0,208,132,.15);color:#00d084;}
+.badge.active{background:rgba(0,208,132,.12);color:#00d084;}
+.badge.expired{background:rgba(255,77,0,.12);color:#ff7a40;}
+.badge.pending{background:rgba(255,184,0,.12);color:#ffb800;}
+.admin-actions{display:flex;gap:5px;}
+.btn-admin{padding:4px 9px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text);font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;font-weight:600;}
+.btn-admin.lib{border-color:rgba(0,208,132,.4);color:#00d084;}
+.btn-admin.rev{border-color:rgba(255,77,0,.3);color:#ff7a40;}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:flex;align-items:flex-end;justify-content:center;}
+.modal-overlay.hidden{display:none;}
+.modal-sheet{background:var(--bg2);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;border-top:1px solid var(--border2);animation:slideUp .3s ease;position:relative;}
+.modal-sheet h2{font-size:19px;font-weight:700;margin-bottom:4px;}
+.modal-sheet p{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.modal-close{position:absolute;top:16px;right:20px;background:var(--bg3);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;}
+.admin-modal{background:var(--bg2);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;border-top:1px solid var(--border2);animation:slideUp .3s ease;position:relative;}
+.admin-modal h3{font-size:16px;font-weight:700;margin-bottom:14px;}
+.field-group{margin-bottom:12px;}
+.field-group label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px;}
+.admin-select{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:10px 12px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:14px;outline:none;}
+
+/* UTILS */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:14px;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:#222;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:500;opacity:0;transition:all .3s;pointer-events:none;border:1px solid var(--border2);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:var(--green);background:#0a1f15;}
+.toast.error{border-color:var(--accent);background:#1f0a0a;}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-state .ei{font-size:40px;margin-bottom:10px;}
+
+@media(min-width:600px){
+  .home-grid,.packs-grid,.shopee-grid{grid-template-columns:repeat(3,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo"><div class="logo-icon">🎥</div><div>Vi<span>dex</span></div></div>
+  <div class="topbar-right">
+    <div id="planBadge" class="plan-badge">Free</div>
+    <button class="btn-login" onclick="openLogin()">🔐 Entrar</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-scroll">
+  <button class="nav-pill active" onclick="showSection('home',this)">🏠 Início</button>
+  <button class="nav-pill" onclick="showSection('downloader',this)">⬇️ Downloader</button>
+  <button class="nav-pill" onclick="showSection('radar',this)">🛒 Radar Shopee</button>
+  <button class="nav-pill" onclick="showSection('legendas',this)">🧠 IA Legendas<span style="font-size:10px;opacity:.7;">🔒</span></button>
+  <button class="nav-pill" onclick="showSection('mentor',this)">🎓 IA Mentor<span style="font-size:10px;opacity:.7;">🔒</span></button>
+  <button class="nav-pill" onclick="showSection('packs',this)">🔥 Packs</button>
+  <button class="nav-pill" onclick="showSection('metadata',this)">🧹 Metadados<span style="font-size:10px;opacity:.7;">🔒</span></button>
+  <button class="nav-pill" onclick="showSection('estrategias',this)">📚 Estratégias<span style="font-size:10px;opacity:.7;">🔒</span></button>
+  <button class="nav-pill" onclick="showSection('planos',this)">💎 Planos</button>
+  <button class="nav-pill" onclick="showSection('admin',this)">👤 Admin</button>
+  <button class="nav-pill" onclick="showSection('suporte',this)">🆘 Suporte</button>
+</div>
+
+<div class="main">
+
+<!-- HOME -->
+<div class="section active" id="sec-home">
+  <div class="home-hero">
+    <div class="tag">PLATAFORMA #1 PARA AFILIADOS SHOPEE</div>
+    <h1>Baixe. Use.<br><em>Viralize.</em></h1>
+    <p class="sub">Vídeos e imagens reais da Shopee + IAs exclusivas para afiliados que faturam.</p>
+    <button class="btn-primary" onclick="showSection('planos',document.querySelectorAll('.nav-pill')[8])">🚀 Ver Planos</button>
+  </div>
+  <div id="planBannerHome" style="padding:12px 16px 0;"></div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="val">+7k</div><div class="lbl">Vídeos HD</div></div>
+    <div class="stat-card"><div class="val">500+</div><div class="lbl">Usuários ativos</div></div>
+    <div class="stat-card"><div class="val">4.9⭐</div><div class="lbl">Avaliação</div></div>
+  </div>
+  <div class="home-grid" id="homeGrid"></div>
+</div>
+
+<!-- DOWNLOADER -->
+<div class="section" id="sec-downloader">
+  <div class="tool-section">
+    <div class="tool-header"><h2>⬇️ Downloader Universal</h2><p>Baixe vídeos sem marca d'água do TikTok, Instagram, Kwai e Shopee.</p></div>
+    <div class="dl-platform-grid">
+      <div class="dl-plat-btn active" id="dlbtn-tiktok" onclick="selectPlatform('tiktok')"><div class="dpi">🎵</div><div class="dpn">TikTok</div></div>
+      <div class="dl-plat-btn" id="dlbtn-instagram" onclick="selectPlatform('instagram')"><div class="dpi">📸</div><div class="dpn">Instagram</div></div>
+      <div class="dl-plat-btn" id="dlbtn-kwai" onclick="selectPlatform('kwai')"><div class="dpi">🎬</div><div class="dpn">Kwai</div></div>
+      <div class="dl-plat-btn" id="dlbtn-shopee" onclick="selectPlatform('shopee')"><div class="dpi">🛍️</div><div class="dpn">Shopee</div></div>
+    </div>
+    <div class="card">
+      <span class="inp-label" id="dlLabel">Cole o link do vídeo TikTok</span>
+      <input class="inp" id="dlUrl" placeholder="https://www.tiktok.com/@usuario/video/..." type="url">
+      <div class="dl-hint" id="dlHint">💡 Você recebe o vídeo <strong>sem marca d'água</strong> + legenda e hashtags prontas.</div>
+      <button class="btn-tool" onclick="downloadVideo()">⬇️ Baixar Vídeo</button>
+      <div id="dlResult"></div>
+    </div>
+  </div>
+</div>
+
+<!-- RADAR SHOPEE -->
+<div class="section" id="sec-radar">
+  <div class="tool-section">
+    <div class="tool-header"><h2>🛒 Radar Shopee</h2><p>Produtos reais com vídeo + imagem + comissão. Toque para gerar legenda e link de afiliado.</p></div>
+
+    <!-- AVISO: URL do proxy precisa ser configurada aqui -->
+    <div id="radarProxyWarn" style="display:none;background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.25);border-radius:12px;padding:14px;margin-bottom:14px;font-size:13px;color:var(--amber);">
+      ⚠️ Configure a URL do proxy no código (variável <code>PROXY_URL</code>) para ativar os produtos reais.
+    </div>
+
+    <div class="search-bar">
+      <input class="inp" id="radarSearch" placeholder="Ex: tênis, mochila, skincare..." value="achados">
+      <button class="btn-srch" onclick="buscarProdutos()">🔍 Buscar</button>
+    </div>
+    <div class="type-pills">
+      <button class="type-pill active" onclick="setSort(this,2)">⚡ Relevância</button>
+      <button class="type-pill" onclick="setSort(this,3)">🔥 Mais Vendidos</button>
+      <button class="type-pill" onclick="setSort(this,1)">💰 Maior Comissão</button>
+    </div>
+    <div id="radarGrid"></div>
+  </div>
+</div>
+
+<!-- IA LEGENDAS -->
+<div class="section" id="sec-legendas">
+  <div class="tool-section">
+    <div class="tool-header"><h2>🧠 IA Legendas</h2><p>Legendas otimizadas para cada plataforma com IA real.</p></div>
+    <div id="legendasContent"></div>
+  </div>
+</div>
+
+<!-- IA MENTOR -->
+<div class="section" id="sec-mentor">
+  <div class="tool-section">
+    <div class="tool-header"><h2>🎓 IA Mentor Shopee</h2><p>Especialista em afiliados • TikTok • Instagram • Vendas</p></div>
+    <div id="mentorContent"></div>
+  </div>
+</div>
+
+<!-- PACKS -->
+<div class="section" id="sec-packs">
+  <div class="tool-section">
+    <div class="tool-header"><h2>🔥 Packs da Shopee</h2><p>Fotos e vídeos prontos por categoria — sem marca d'água.</p></div>
+    <div id="packsContent"></div>
+  </div>
+</div>
+
+<!-- METADADOS -->
+<div class="section" id="sec-metadata">
+  <div class="tool-section">
+    <div class="tool-header"><h2>🧹 Limpar Metadados</h2><p>Remova rastros invisíveis para mais alcance orgânico.</p></div>
+    <div id="metadataContent"></div>
+  </div>
+</div>
+
+<!-- ESTRATÉGIAS -->
+<div class="section" id="sec-estrategias">
+  <div class="tool-section">
+    <div class="tool-header"><h2>📚 Biblioteca de Estratégias</h2><p>O que os afiliados que faturam R$5.000+/mês nunca vão te contar.</p></div>
+    <div id="estrategiasContent"></div>
+  </div>
+</div>
+
+<!-- PLANOS -->
+<div class="section" id="sec-planos">
+  <div class="plans-wrap">
+    <h2>💎 Escolha seu Plano</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Cancele quando quiser • Sem fidelidade</p>
+    <div class="plan-card">
+      <div class="pname">🆓 Free</div><div class="pdesc">Comece sem pagar nada</div>
+      <div class="pprice">R$ 0</div><div class="pper">para sempre</div>
+      <div class="plan-features">
+        <div class="plan-feat"><div class="ic">✓</div>Downloaders + Radar Shopee básico</div>
+        <div class="plan-feat no"><div class="ic">✗</div>IA Legendas / IA Mentor</div>
+        <div class="plan-feat no"><div class="ic">✗</div>Packs (+7.000 vídeos)</div>
+      </div>
+      <button class="btn-secondary" onclick="setPlano('free')">Plano atual</button>
+    </div>
+    <div class="plan-card featured">
+      <div class="feat-badge">MAIS POPULAR</div>
+      <div class="pname">⚡ Premium</div><div class="pdesc">Downloads ilimitados + Packs</div>
+      <div class="pprice"><span class="pold">R$ 29,90</span>R$ 5,90</div><div class="pper">por mês</div>
+      <div class="plan-features">
+        <div class="plan-feat"><div class="ic">✓</div>Tudo do Free</div>
+        <div class="plan-feat"><div class="ic">✓</div>+7.000 vídeos e fotos HD</div>
+        <div class="plan-feat"><div class="ic">✓</div>Downloads ilimitados</div>
+        <div class="plan-feat no"><div class="ic">✗</div>IA Legendas / IA Mentor</div>
+      </div>
+      <button class="btn-primary" onclick="setPlano('premium')">🚀 Ativar Premium — R$ 5,90/mês</button>
+    </div>
+    <div class="plan-card" style="border-color:var(--green)">
+      <div class="feat-badge" style="background:var(--green)">MAIS COMPLETO</div>
+      <div class="pname">🤖 Pack Completo</div><div class="pdesc">Conteúdo + IAs + Estratégias</div>
+      <div class="pprice"><span class="pold">R$ 197,00</span>R$ 97,00</div><div class="pper">pagamento único • vitalício</div>
+      <div class="plan-features">
+        <div class="plan-feat"><div class="ic">✓</div>Tudo do Premium</div>
+        <div class="plan-feat"><div class="ic">✓</div>IA Legendas (TikTok/Shopee/Reels)</div>
+        <div class="plan-feat"><div class="ic">✓</div>IA Mentor Shopee 24h</div>
+        <div class="plan-feat"><div class="ic">✓</div>Radar + link afiliado automático</div>
+        <div class="plan-feat"><div class="ic">✓</div>Metadados + Estratégias Secretas</div>
+      </div>
+      <button class="btn-primary" style="background:var(--green)" onclick="setPlano('pack')">🔓 Garantir por R$ 97,00</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="section" id="sec-admin">
+  <div class="admin-section">
+    <h2 style="font-size:19px;font-weight:700;margin-bottom:14px;">👤 Painel Admin</h2>
+    <div class="admin-stats" id="adminStats"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:14px;font-weight:600;">Usuários</div>
+      <button class="btn-tool" style="width:auto;padding:8px 14px;margin:0;font-size:13px;" onclick="openAddUser()">+ Adicionar</button>
+    </div>
+    <input class="inp" id="adminSearch" placeholder="Buscar usuário..." style="margin-bottom:12px;" oninput="renderAdmin()">
+    <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead><tr><th>Usuário</th><th>Plano</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody id="adminTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SUPORTE -->
+<div class="section" id="sec-suporte">
+  <div class="tool-section">
+    <div class="tool-header"><h2>🆘 Suporte</h2></div>
+    <div class="support-card">
+      <h3>💬 WhatsApp</h3>
+      <p>Resposta rápida • Segunda a sexta • 9h às 18h</p>
+      <button class="btn-wpp" onclick="toast('Redirecionando...','success')">💬 Falar com Suporte</button>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px;">❓ Dúvidas Frequentes</div>
+      <div id="faqList"></div>
+    </div>
+    <div style="padding-top:16px;">
+      <div class="tool-header"><h2>⭐ Depoimentos</h2></div>
+      <div id="depList"></div>
+    </div>
+  </div>
+</div>
+</div><!-- /main -->
+
+<!-- PRODUTO MODAL -->
+<div class="produto-modal-overlay hidden" id="produtoModal">
+  <div class="produto-modal" id="produtoModalInner"></div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay hidden" id="loginModal">
+  <div class="modal-sheet">
+    <button class="modal-close" onclick="closeLogin()">✕</button>
+    <h2>🔐 Acessar minha conta</h2>
+    <p>Digite seu e-mail de assinante para entrar</p>
+    <span class="inp-label">E-mail</span>
+    <input class="inp" id="loginEmail" placeholder="seu@email.com" type="email" style="margin-bottom:12px;">
+    <button class="btn-primary" onclick="doLogin()">Entrar</button>
+    <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:14px;">Não é assinante? <span style="color:var(--accent);cursor:pointer;" onclick="closeLogin();showSection('planos',null)">Ver planos</span></p>
+  </div>
+</div>
+
+<!-- ADD USER MODAL -->
+<div class="modal-overlay hidden" id="addUserModal">
+  <div class="admin-modal">
+    <button class="modal-close" onclick="closeAddUser()">✕</button>
+    <h3 id="addUserTitle">Adicionar Usuário</h3>
+    <div class="field-group"><label>Nome</label><input class="inp" id="auNome"></div>
+    <div class="field-group"><label>E-mail</label><input class="inp" id="auEmail"></div>
+    <div class="field-group"><label>Plano</label>
+      <select class="admin-select" id="auPlano"><option value="free">Free</option><option value="premium">Premium</option><option value="pack">Pack Completo</option></select>
+    </div>
+    <div class="field-group"><label>Status</label>
+      <select class="admin-select" id="auStatus"><option value="active">Ativo</option><option value="pending">Pendente</option><option value="expired">Expirado</option></select>
+    </div>
+    <button class="btn-primary" style="margin-top:12px;" onclick="saveUser()">Salvar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// ⚙️ ÚNICA CONFIGURAÇÃO NECESSÁRIA:
+// Após fazer deploy do proxy na Vercel, cole a URL aqui:
+// ============================================================
+const PROXY_URL = 'https://SEU-PROXY.vercel.app';
+// ============================================================
+
+let currentPlan = 'free';
+let radarSortType = 2;
+let activePlatform = 'tiktok';
+let activeCat = 'Todos';
+let currentProduto = null;
+let chatHistory = [];
+let legendaTipo = 'tiktok';
+let pmLegTipo = 'tiktok';
+let editUserId = null;
+let nextId = 5;
+
+let users = [
+  {id:1,nome:'Ana Beatriz',email:'ana@gmail.com',plano:'premium',status:'active'},
+  {id:2,nome:'Carlos Lima',email:'carlos@hotmail.com',plano:'pack',status:'active'},
+  {id:3,nome:'Juliana Melo',email:'juliana@email.com',plano:'free',status:'pending'},
+  {id:4,nome:'Roberto Alves',email:'rob@gmail.com',plano:'premium',status:'expired'},
+];
+
+// ============ SHOPEE API ============
+const proxyReady = () => PROXY_URL && !PROXY_URL.includes('SEU-PROXY');
+
+async function shopeeCall(action, params = {}) {
+  if (!proxyReady()) throw new Error('proxy_not_set');
+  const qs = new URLSearchParams({ action, ...params }).toString();
+  const resp = await fetch(`${PROXY_URL}/api/shopee?${qs}`);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  return resp.json();
+}
+
+// ============ NAV ============
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (id === 'legendas') renderLegendas();
+  if (id === 'mentor') renderMentor();
+  if (id === 'packs') renderPacks();
+  if (id === 'metadata') renderMetadata();
+  if (id === 'estrategias') renderEstrategias();
+  if (id === 'admin') renderAdmin();
+  if (id === 'suporte') renderSuporteExtras();
+  if (id === 'radar') buscarProdutos();
+}
+
+// ============ PLAN ============
+function setPlano(p) {
+  currentPlan = p;
+  const badge = document.getElementById('planBadge');
+  const labels = { free: 'Free', premium: 'Premium', pack: 'Pack ✓' };
+  badge.textContent = labels[p];
+  badge.className = 'plan-badge' + (p === 'premium' ? ' premium' : p === 'pack' ? ' pack' : '');
+  renderHomeGrid(); renderPlanBanner();
+  toast('Plano ' + labels[p] + ' ativado!', 'success');
+}
+
+function canAccess(plan) {
+  if (plan === 'free') return true;
+  if (plan === 'premium') return currentPlan === 'premium' || currentPlan === 'pack';
+  if (plan === 'pack') return currentPlan === 'pack';
+  return false;
+}
+
+function lockOverlay(tool) {
+  const msgs = { pack: 'Recurso exclusivo do Pack Completo. Desbloqueie por R$ 97,00 vitalício.', premium: 'Recurso exclusivo do Premium. Acesse por R$ 5,90/mês.' };
+  const btns = { pack: '🚀 Garantir Pack — R$ 97,00', premium: '🚀 Ativar Premium — R$ 5,90/mês' };
+  return `<div class="lock-overlay"><div class="lock-icon">🔒</div><h3>Recurso bloqueado</h3><p>${msgs[tool] || msgs.pack}</p><button class="btn-upgrade" onclick="showSection('planos',null)">${btns[tool] || btns.pack}</button></div>`;
+}
+
+// ============ HOME ============
+const toolShortcuts = [
+  { icon: '⬇️', name: 'Downloader', section: 'downloader', plan: 'free', label: 'Free' },
+  { icon: '🛒', name: 'Radar Shopee', section: 'radar', plan: 'free', label: 'Free' },
+  { icon: '🧠', name: 'IA Legendas', section: 'legendas', plan: 'pack', label: 'Pack' },
+  { icon: '🎓', name: 'IA Mentor', section: 'mentor', plan: 'pack', label: 'Pack' },
+  { icon: '🔥', name: 'Packs', section: 'packs', plan: 'premium', label: 'Premium' },
+  { icon: '🧹', name: 'Metadados', section: 'metadata', plan: 'pack', label: 'Pack' },
+  { icon: '📚', name: 'Estratégias', section: 'estrategias', plan: 'pack', label: 'Pack' },
+  { icon: '💎', name: 'Planos', section: 'planos', plan: 'free', label: 'Free' },
+];
+
+function renderHomeGrid() {
+  document.getElementById('homeGrid').innerHTML = toolShortcuts.map(t => {
+    const locked = !canAccess(t.plan);
+    return `<div class="tool-shortcut${locked ? ' locked' : ''}" onclick="showSection('${t.section}',null)">
+      <div class="ts-icon">${t.icon}</div>
+      <div class="ts-name">${t.name}</div>
+      <div class="ts-plan">${locked ? '🔒 ' + t.label : t.label}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPlanBanner() {
+  const el = document.getElementById('planBannerHome');
+  if (currentPlan === 'pack') { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="plan-banner"><div><div class="pb-label">Plano atual</div><div class="pb-plan">${currentPlan === 'free' ? 'Free — recursos limitados' : 'Premium — sem IAs'}</div></div><button class="btn-upgrade-sm" onclick="showSection('planos',null)">Fazer upgrade</button></div>`;
+}
+
+renderHomeGrid(); renderPlanBanner();
+
+// ============ RADAR SHOPEE ============
+function setSort(btn, type) {
+  radarSortType = type;
+  document.querySelectorAll('#sec-radar .type-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  buscarProdutos();
+}
+
+async function buscarProdutos() {
+  const grid = document.getElementById('radarGrid');
+  const warn = document.getElementById('radarProxyWarn');
+
+  if (!proxyReady()) {
+    warn.style.display = 'block';
+    renderProdutos(getDemoProdutos(), true);
+    return;
+  }
+  warn.style.display = 'none';
+
+  const kw = document.getElementById('radarSearch').value.trim() || 'achados';
+  grid.innerHTML = `<div class="shopee-grid">${[1,2,3,4,5,6].map(() =>
+    `<div class="skeleton" style="height:240px;"></div>`).join('')}</div>`;
+
+  try {
+    const data = await shopeeCall('search', { keyword: kw, limit: 20, sortType: radarSortType });
+    const produtos = data?.data?.productOfferV2?.nodes;
+    if (!produtos || produtos.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><div class="ei">🔍</div><p>Nenhum produto encontrado para "<strong>${kw}</strong>".</p></div>`;
+      return;
+    }
+    renderProdutos(produtos);
+  } catch (e) {
+    renderProdutos(getDemoProdutos(), true);
+    grid.innerHTML = `<div style="background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.2);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--amber);">⚠️ Exibindo produtos demo — verifique se o proxy está online.</div>` + grid.innerHTML;
+  }
+}
+
+function getDemoProdutos() {
+  return [
+    {itemId:'d1',productName:'Tênis Esportivo Leve CloudRun Pro',priceMin:89.90,commissionRate:8,commission:10.39,imageUrl:'',videoUrl:'demo',shopName:'SportsBR',offerLink:'#'},
+    {itemId:'d2',productName:'Sérum Vitamina C Clareador 30ml',priceMin:34.90,commissionRate:12,commission:4.19,imageUrl:'',videoUrl:'',shopName:'BeautyStore',offerLink:'#'},
+    {itemId:'d3',productName:'Suporte Celular Magnético 360°',priceMin:19.90,commissionRate:15,commission:2.99,imageUrl:'',videoUrl:'demo',shopName:'GadgetsPro',offerLink:'#'},
+    {itemId:'d4',productName:'Mochila Impermeável 40L Viagem',priceMin:119.90,commissionRate:7,commission:8.39,imageUrl:'',videoUrl:'',shopName:'TravelGear',offerLink:'#'},
+    {itemId:'d5',productName:'Kit Papelaria Aesthetic Pastel',priceMin:29.90,commissionRate:18,commission:5.38,imageUrl:'',videoUrl:'demo',shopName:'PapelariaFofa',offerLink:'#'},
+    {itemId:'d6',productName:'Fone Bluetooth TWS Pro Bass',priceMin:79.90,commissionRate:10,commission:7.99,imageUrl:'',videoUrl:'',shopName:'AudioTech',offerLink:'#'},
+  ];
+}
+
+function getEmoji(nome) {
+  if (!nome) return '🛍️';
+  const n = nome.toLowerCase();
+  if (n.includes('tênis')||n.includes('sapato')) return '👟';
+  if (n.includes('celular')||n.includes('fone')||n.includes('bluetooth')) return '📱';
+  if (n.includes('mochila')||n.includes('bolsa')) return '🎒';
+  if (n.includes('skincare')||n.includes('sérum')||n.includes('vitamina')) return '🧴';
+  if (n.includes('papelaria')||n.includes('caneta')) return '🖊️';
+  if (n.includes('cozinha')||n.includes('panela')) return '🍳';
+  if (n.includes('fitness')||n.includes('elástico')) return '💪';
+  if (n.includes('suporte')) return '📲';
+  return '🛍️';
+}
+
+function renderProdutos(list, isDemo = false) {
+  const grid = document.getElementById('radarGrid');
+  grid.innerHTML = `<div class="shopee-grid">${list.map(p => {
+    const preco = p.priceMin ? `R$ ${Number(p.priceMin).toFixed(2).replace('.', ',')}` : '—';
+    const comm = `${p.commissionRate}% (R$ ${Number(p.commission || 0).toFixed(2).replace('.', ',')})`;
+    const hasVideo = p.videoUrl && p.videoUrl !== '';
+    return `<div class="produto-card" onclick='abrirProduto(${JSON.stringify(p)})'>
+      <div class="produto-media">
+        ${p.imageUrl
+          ? `<img src="${p.imageUrl}" alt="" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML+='<span style=\\'font-size:52px\\'>${getEmoji(p.productName)}</span>'">`
+          : `<span style="font-size:52px;">${getEmoji(p.productName)}</span>`}
+        ${hasVideo ? `<div class="has-video-badge">▶ VÍDEO</div>` : ''}
+        <div class="comm-badge">${p.commissionRate}%</div>
+        ${hasVideo ? `<div class="play-overlay"><span>▶</span></div>` : ''}
+      </div>
+      <div class="produto-info">
+        <div class="produto-nome">${p.productName}</div>
+        <div class="produto-price">${preco}</div>
+        <div class="produto-comm">💰 ${comm}</div>
+        <div class="produto-actions">
+          <button class="btn-sm" onclick="event.stopPropagation();gerarLegRapida(event,'${p.itemId}','${p.productName.replace(/'/g,"\\'").replace(/"/g,'\\"')}')">🤖 Legenda</button>
+          <button class="btn-sm" onclick="event.stopPropagation();copiarLink('${p.offerLink||p.productLink||'#'}')">🔗 Link</button>
+        </div>
+        <div id="leg-${p.itemId}"></div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+async function copiarLink(url) {
+  if (url === '#') { toast('Link não disponível no modo demo', 'error'); return; }
+  toast('Gerando link de afiliado...', '');
+  try {
+    const data = await shopeeCall('generate_link', { url });
+    const link = data?.data?.generateShortLink?.shortLink || url;
+    await navigator.clipboard.writeText(link);
+    toast('Link de afiliado copiado!', 'success');
+  } catch {
+    await navigator.clipboard.writeText(url);
+    toast('Link copiado!', 'success');
+  }
+}
+
+async function gerarLegRapida(ev, itemId, nome) {
+  const el = document.getElementById('leg-' + itemId);
+  if (!el) return;
+  el.innerHTML = `<div style="font-size:11px;color:var(--muted);padding:4px 0;">Gerando... <div class="spinner" style="width:10px;height:10px;border-width:1.5px;display:inline-block;vertical-align:middle;"></div></div>`;
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 200,
+        messages: [{ role: 'user', content: `Legenda curta (máx 3 linhas) para TikTok afiliado Shopee do produto: "${nome}". Inclua emojis e 2 hashtags. Retorne APENAS a legenda.` }] })
+    });
+    const data = await resp.json();
+    const txt = data.content?.[0]?.text || '';
+    el.innerHTML = `<div style="background:var(--bg3);border-radius:8px;padding:8px;font-size:11px;line-height:1.5;margin-top:4px;">${txt.replace(/\n/g,'<br>')}
+      <button onclick="navigator.clipboard.writeText(this.dataset.t);toast('Copiado!','success')" data-t="${txt.replace(/"/g,'&quot;')}" style="margin-top:5px;width:100%;background:transparent;border:1px solid var(--border2);color:var(--muted);padding:4px;border-radius:5px;font-size:10px;cursor:pointer;font-family:'Outfit',sans-serif;">📋 Copiar</button>
+    </div>`;
+  } catch (e) { el.innerHTML = ''; }
+}
+
+// ============ PRODUTO MODAL ============
+function abrirProduto(p) {
+  currentProduto = p;
+  const modal = document.getElementById('produtoModal');
+  const inner = document.getElementById('produtoModalInner');
+  modal.classList.remove('hidden');
+  const preco = p.priceMin ? `R$ ${Number(p.priceMin).toFixed(2).replace('.', ',')}` : '—';
+  const comm = `💰 R$ ${Number(p.commission || 0).toFixed(2).replace('.', ',')} (${p.commissionRate}% comissão)`;
+  const hasVideo = p.videoUrl && p.videoUrl !== 'demo' && p.videoUrl !== '';
+  inner.innerHTML = `
+    <div class="pm-media">
+      ${hasVideo
+        ? `<video src="${p.videoUrl}" autoplay muted loop playsinline></video>`
+        : p.imageUrl
+          ? `<img src="${p.imageUrl}" alt="${p.productName}">`
+          : `<div class="pm-emoji">${getEmoji(p.productName)}</div>`}
+      <button class="pm-close" onclick="document.getElementById('produtoModal').classList.add('hidden')">✕</button>
+    </div>
+    <div class="pm-tabs">
+      <button class="pm-tab active" id="pmtab-info" onclick="switchPmTab('info')">ℹ️ Produto</button>
+      <button class="pm-tab" id="pmtab-leg" onclick="switchPmTab('leg')">🤖 Legenda IA</button>
+      <button class="pm-tab" id="pmtab-link" onclick="switchPmTab('link')">🔗 Link</button>
+    </div>
+    <div class="pm-body">
+      <div id="pm-tab-info">
+        <div class="pm-name">${p.productName}</div>
+        <div class="pm-price">${preco}</div>
+        <div class="pm-comm">${comm}</div>
+        <div class="pm-shop">🏪 ${p.shopName || 'Loja Shopee'}</div>
+        ${p.imageUrl ? `<div class="img-strip"><img src="${p.imageUrl}" class="active"></div>` : ''}
+        ${hasVideo
+          ? `<button class="btn-tool" onclick="baixarMidia('${p.videoUrl}')">⬇️ Baixar Vídeo</button>`
+          : ''}
+        ${p.imageUrl
+          ? `<button class="btn-tool" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);margin-top:8px;" onclick="baixarMidia('${p.imageUrl}')">🖼️ Baixar Imagem</button>`
+          : ''}
+        <button class="btn-tool" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);margin-top:8px;" onclick="window.open('${p.offerLink||p.productLink||'#'}','_blank')">🛍️ Ver na Shopee</button>
+      </div>
+      <div id="pm-tab-leg" style="display:none;">
+        <div class="type-pills">
+          <button class="type-pill active" onclick="setPmLeg(this,'tiktok')">🔥 TikTok</button>
+          <button class="type-pill" onclick="setPmLeg(this,'shopee')">🛒 Shopee</button>
+          <button class="type-pill" onclick="setPmLeg(this,'reels')">📸 Reels</button>
+          <button class="type-pill" onclick="setPmLeg(this,'whats')">💬 WhatsApp</button>
+        </div>
+        <button class="btn-tool" id="pmLegBtn" onclick="gerarLegModal()">✨ Gerar com IA</button>
+        <div id="pmLegResult" style="margin-top:12px;"></div>
+      </div>
+      <div id="pm-tab-link" style="display:none;">
+        <div class="link-box">
+          <div class="link-label">Link original</div>
+          <div class="link-val">${p.offerLink || p.productLink || '—'}</div>
+        </div>
+        <button class="btn-tool" id="linkGenBtn" onclick="gerarLinkModal()">🔗 Gerar Link de Afiliado</button>
+        <div id="linkResult" style="margin-top:12px;"></div>
+      </div>
+    </div>`;
+}
+
+function switchPmTab(tab) {
+  ['info','leg','link'].forEach(t => {
+    document.getElementById('pm-tab-' + t).style.display = t === tab ? 'block' : 'none';
+    document.getElementById('pmtab-' + t).classList.toggle('active', t === tab);
+  });
+}
+
+function setPmLeg(btn, tipo) {
+  pmLegTipo = tipo;
+  document.querySelectorAll('#pm-tab-leg .type-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function gerarLegModal() {
+  const btn = document.getElementById('pmLegBtn');
+  const res = document.getElementById('pmLegResult');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Gerando...';
+  const tipoMap = { tiktok: 'viral para TikTok com gancho e hashtags virais brasileiras', shopee: 'para loja Shopee com benefícios e call-to-action', reels: 'para Instagram Reels com lifestyle e hashtags', whats: 'curta para WhatsApp com urgência' };
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 400,
+        messages: [{ role: 'user', content: `Legenda ${tipoMap[pmLegTipo]} para o produto Shopee: "${currentProduto.productName}", a partir de R$${Number(currentProduto.priceMin||0).toFixed(2).replace('.',',')}. Retorne APENAS a legenda.` }] })
+    });
+    const data = await resp.json();
+    const txt = data.content?.[0]?.text || '';
+    res.innerHTML = `<div class="leg-box">${txt.replace(/\n/g,'<br>')}</div>
+      <button class="btn-copy-full" onclick="navigator.clipboard.writeText(this.dataset.t);toast('Copiado!','success')" data-t="${txt.replace(/"/g,'&quot;')}">📋 Copiar Legenda</button>`;
+  } catch { res.innerHTML = `<div style="color:var(--accent);font-size:13px;">Erro. Verifique sua internet.</div>`; }
+  btn.disabled = false; btn.innerHTML = '✨ Gerar com IA';
+}
+
+async function gerarLinkModal() {
+  const btn = document.getElementById('linkGenBtn');
+  const res = document.getElementById('linkResult');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Gerando...';
+  const url = currentProduto.offerLink || currentProduto.productLink;
+  if (!url || url === '#') {
+    res.innerHTML = `<div style="color:var(--amber);font-size:13px;">Link não disponível no modo demo.</div>`;
+    btn.disabled = false; btn.innerHTML = '🔗 Gerar Link de Afiliado'; return;
+  }
+  try {
+    const data = await shopeeCall('generate_link', { url });
+    const link = data?.data?.generateShortLink?.shortLink || data?.data?.generateShortLink?.longLink;
+    if (link) {
+      res.innerHTML = `<div class="link-box"><div class="link-label">✅ Seu link de afiliado</div><div class="link-val">${link}</div></div>
+        <button class="btn-copy-full" onclick="navigator.clipboard.writeText('${link}');toast('Copiado!','success')">📋 Copiar Link</button>`;
+    } else throw new Error();
+  } catch { res.innerHTML = `<div style="color:var(--accent);font-size:13px;">Erro ao gerar link. Verifique o proxy.</div>`; }
+  btn.disabled = false; btn.innerHTML = '🔗 Gerar Link de Afiliado';
+}
+
+function baixarMidia(url) {
+  const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.download = '';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('Download iniciado!', 'success');
+}
+
+document.getElementById('produtoModal').addEventListener('click', function(e) { if (e.target === this) this.classList.add('hidden'); });
+
+// ============ DOWNLOADER ============
+const dlConfig = {
+  tiktok:    { label:'Cole o link do TikTok',       hint:'💡 Vídeo <strong>sem marca d\'água</strong> + hashtags.', placeholder:'https://www.tiktok.com/@usuario/video/...', pattern:/tiktok\.com/i },
+  instagram: { label:'Cole o link do Reels',          hint:'💡 Baixe Reels <strong>sem marca d\'água</strong>.',      placeholder:'https://www.instagram.com/reel/...',          pattern:/instagram\.com/i },
+  kwai:      { label:'Cole o link do Kwai',           hint:'💡 Vídeo Kwai <strong>sem marca d\'água</strong>.',       placeholder:'https://www.kwai.com/...',                     pattern:/kwai\.com/i },
+  shopee:    { label:'Cole o link do produto Shopee', hint:'💡 Baixa o vídeo do produto <strong>sem marca d\'água</strong>.', placeholder:'https://shopee.com.br/...',           pattern:/shopee/i },
+};
+
+function selectPlatform(p) {
+  activePlatform = p;
+  document.querySelectorAll('.dl-plat-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('dlbtn-' + p).classList.add('active');
+  const c = dlConfig[p];
+  document.getElementById('dlLabel').textContent = c.label;
+  document.getElementById('dlUrl').placeholder = c.placeholder;
+  document.getElementById('dlHint').innerHTML = c.hint;
+  document.getElementById('dlUrl').value = '';
+  document.getElementById('dlResult').innerHTML = '';
+}
+
+function downloadVideo() {
+  const url = document.getElementById('dlUrl').value.trim();
+  const resEl = document.getElementById('dlResult');
+  const c = dlConfig[activePlatform];
+  if (!url) { toast('Cole um link válido!', 'error'); return; }
+  if (!c.pattern.test(url)) { toast('Link inválido para esta plataforma!', 'error'); return; }
+  resEl.innerHTML = `<div style="text-align:center;padding:20px;"><div class="spinner"></div><div style="margin-top:10px;font-size:13px;color:var(--muted);">Processando vídeo...</div></div>`;
+  setTimeout(() => {
+    const tags = { tiktok:'#achadinhosdasemana #shopee #comprasonline #viral', instagram:'#reels #shopeeachados #achados #dica', kwai:'#kwai #viral #comprasonline', shopee:'#shopee #afiliados #achados' };
+    const desc = `✨ Produto incrível com desconto! Corre que é por tempo limitado 🔥\n${tags[activePlatform]}`;
+    resEl.innerHTML = `<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-top:12px;">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
+        <div style="width:44px;height:44px;background:var(--bg4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;">🎬</div>
+        <div><div style="font-size:13px;font-weight:600;">video_sem_marca_dagua.mp4</div><div style="font-size:11px;color:var(--muted);">Pronto para baixar</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;line-height:1.6;">${desc}</div>
+      <button class="btn-tool" style="margin-top:10px;" onclick="toast('Download iniciado!','success')">⬇️ Salvar Vídeo</button>
+      <button class="btn-copy-full" style="margin-top:6px;" onclick="navigator.clipboard.writeText(\`${desc}\`);toast('Legenda copiada!','success')">📋 Copiar Legenda</button>
+    </div>`;
+  }, 2000);
+}
+
+// ============ IA LEGENDAS ============
+function renderLegendas() {
+  const el = document.getElementById('legendasContent');
+  if (!canAccess('pack')) { el.innerHTML = lockOverlay('pack'); return; }
+  el.innerHTML = `<div class="card">
+    <div style="font-size:14px;font-weight:600;margin-bottom:12px;">✍️ Tipo de conteúdo</div>
+    <div class="type-pills">
+      <button class="type-pill active" onclick="selLeg(this,'tiktok')">🔥 TikTok</button>
+      <button class="type-pill" onclick="selLeg(this,'shopee')">🛒 Shopee</button>
+      <button class="type-pill" onclick="selLeg(this,'whats')">💬 WhatsApp</button>
+      <button class="type-pill" onclick="selLeg(this,'reels')">📸 Reels</button>
+    </div>
+    <span class="inp-label">Descreva o produto</span>
+    <textarea class="inp" id="legendaDesc" placeholder="Ex: Tênis esportivo leve, frete grátis, até 30% off..."></textarea>
+    <button class="btn-tool" id="legendaBtn" onclick="gerarLegenda()">✨ Gerar Legenda com IA</button>
+    <div id="legendaResult"></div>
+  </div>`;
+}
+
+function selLeg(btn, tipo) {
+  legendaTipo = tipo;
+  document.querySelectorAll('#sec-legendas .type-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function gerarLegenda() {
+  const desc = document.getElementById('legendaDesc').value.trim();
+  if (!desc) { toast('Descreva o produto!', 'error'); return; }
+  const btn = document.getElementById('legendaBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Gerando...';
+  const tipoMap = { tiktok:'viral para TikTok com gancho forte e hashtags virais', shopee:'para Shopee com benefícios e call-to-action', whats:'curta para WhatsApp com urgência', reels:'para Instagram Reels com lifestyle' };
+  const res = document.getElementById('legendaResult');
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 500,
+        messages: [{ role: 'user', content: `Crie uma legenda ${tipoMap[legendaTipo]} para o produto Shopee: "${desc}". Retorne APENAS a legenda pronta.` }] })
+    });
+    const data = await resp.json();
+    const txt = data.content?.[0]?.text || '';
+    res.innerHTML = `<div class="leg-box" style="margin-top:12px;">${txt.replace(/\n/g,'<br>')}</div>
+      <button class="btn-copy-full" onclick="navigator.clipboard.writeText(this.dataset.t);toast('Copiado!','success')" data-t="${txt.replace(/"/g,'&quot;')}">📋 Copiar Legenda</button>`;
+  } catch { res.innerHTML = `<div style="color:var(--accent);font-size:13px;">Erro de conexão.</div>`; }
+  btn.disabled = false; btn.innerHTML = '✨ Gerar Legenda com IA';
+}
+
+// ============ IA MENTOR ============
+function renderMentor() {
+  const el = document.getElementById('mentorContent');
+  if (!canAccess('pack')) { el.innerHTML = lockOverlay('pack'); return; }
+  chatHistory = [{ role: 'assistant', content: 'Olá! Sou o IA Mentor Shopee 👋 Especialista em afiliados, TikTok, Instagram e vendas. Me pergunte qualquer coisa!' }];
+  el.innerHTML = `<div class="chat-box">
+    <div class="quick-pills">
+      <button class="quick-pill" onclick="sendQuick('Como escolher produtos que vendem?')">🛍️ Como escolher produtos?</button>
+      <button class="quick-pill" onclick="sendQuick('Como criar vídeos virais no TikTok?')">🎵 Vídeos virais</button>
+      <button class="quick-pill" onclick="sendQuick('Melhor estratégia para iniciantes?')">🚀 Para iniciantes</button>
+      <button class="quick-pill" onclick="sendQuick('Como escrever legendas que vendem?')">✍️ Legendas</button>
+    </div>
+    <div class="chat-messages" id="chatMsgs"></div>
+    <div class="chat-input-row">
+      <input class="inp" id="chatInput" placeholder="Pergunte ao mentor..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">➤</button>
+    </div>
+  </div>`;
+  renderChatMessages();
+}
+
+function renderChatMessages() {
+  const el = document.getElementById('chatMsgs'); if (!el) return;
+  el.innerHTML = chatHistory.map(m => `<div class="msg ${m.role === 'user' ? 'user' : 'bot'}">${m.content.replace(/\n/g,'<br>')}</div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function sendQuick(msg) { document.getElementById('chatInput').value = msg; sendChat(); }
+
+async function sendChat() {
+  const inp = document.getElementById('chatInput');
+  const msg = inp.value.trim(); if (!msg) return;
+  inp.value = ''; chatHistory.push({ role: 'user', content: msg }); renderChatMessages();
+  const msgs = document.getElementById('chatMsgs');
+  const typing = document.createElement('div'); typing.className = 'msg bot';
+  typing.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(typing); msgs.scrollTop = msgs.scrollHeight;
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 600,
+        system: 'Você é o IA Mentor Shopee — especialista em afiliados Shopee no Brasil, TikTok, Instagram Reels e estratégias de vendas. Responda em português brasileiro, direto e prático. Máx 3 parágrafos curtos.',
+        messages: chatHistory.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content })) })
+    });
+    const data = await resp.json();
+    const txt = data.content?.[0]?.text || 'Desculpe, tive um problema. Tente novamente!';
+    typing.remove(); chatHistory.push({ role: 'assistant', content: txt }); renderChatMessages();
+  } catch { typing.remove(); chatHistory.push({ role: 'assistant', content: 'Erro de conexão.' }); renderChatMessages(); }
+}
+
+// ============ PACKS ============
+const cats = ['Todos','Casa & Decoração','Eletrônicos','Maternidade','Fitness','Feminino','Pet','Papelaria'];
+const packs = [
+  {emoji:'🛋️',name:'Rack TV 55"',cat:'Casa & Decoração'},{emoji:'📱',name:'Suporte Celular',cat:'Eletrônicos'},
+  {emoji:'👶',name:'Kit Bebê',cat:'Maternidade'},{emoji:'💪',name:'Elástico Fitness',cat:'Fitness'},
+  {emoji:'👠',name:'Sandália Tendência',cat:'Feminino'},{emoji:'🐾',name:'Caminha Pet',cat:'Pet'},
+  {emoji:'🖍️',name:'Kit Papelaria',cat:'Papelaria'},{emoji:'🔌',name:'Carregador Turbo',cat:'Eletrônicos'},
+  {emoji:'🌿',name:'Vaso Decorativo',cat:'Casa & Decoração'},{emoji:'🎒',name:'Mochila Escolar',cat:'Papelaria'},
+  {emoji:'🧴',name:'Kit Skincare',cat:'Feminino'},{emoji:'🏋️',name:'Halter',cat:'Fitness'},
+];
+
+function renderPacks() {
+  const el = document.getElementById('packsContent');
+  const filtered = activeCat === 'Todos' ? packs : packs.filter(p => p.cat === activeCat);
+  const locked = !canAccess('premium');
+  el.innerHTML = `<div class="cat-pills">${cats.map(c => `<button class="cat-pill${c===activeCat?' active':''}" onclick="activeCat='${c}';renderPacks()">${c}</button>`).join('')}</div>
+  ${locked ? lockOverlay('premium') : `<div class="packs-grid">${filtered.map(p =>
+    `<div class="pack-card"><div class="pack-thumb">${p.emoji}<div class="overlay"><span>${p.cat}</span></div></div>
+    <div class="pack-info"><div class="pack-name">${p.name}</div><div class="pack-cat">${p.cat}</div>
+    <button class="btn-dl" onclick="toast('Baixando: ${p.name}','success')">⬇️ Baixar</button></div></div>`
+  ).join('')}</div>`}`;
+}
+
+// ============ METADADOS ============
+function renderMetadata() {
+  const el = document.getElementById('metadataContent');
+  if (!canAccess('pack')) { el.innerHTML = lockOverlay('pack'); return; }
+  el.innerHTML = `<div class="card">
+    <div style="background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;">🔍 O que são metadados?</div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6;">Todo vídeo carrega informações <strong>invisíveis</strong> — software gerador, data, GPS, ID. As plataformas detectam e reduzem o alcance.</p>
+    </div>
+    <div class="drop-zone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event)">
+      <div class="dz-icon">🎬</div>
+      <p>Arraste seu vídeo aqui<br>ou toque para selecionar</p>
+      <div class="dz-hint">MP4, MOV, AVI, WEBM • Máx. 500MB</div>
+    </div>
+    <input type="file" id="fileInput" accept="video/*" style="display:none" onchange="processMetadata(this.files[0])">
+    <div id="metaResult"></div>
+  </div>`;
+}
+
+function handleDrop(e) { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f?.type.startsWith('video/')) processMetadata(f); }
+
+function processMetadata(file) {
+  if (!file) return;
+  const el = document.getElementById('metaResult');
+  el.innerHTML = `<div style="text-align:center;padding:20px;"><div class="spinner"></div><div style="margin-top:10px;font-size:13px;color:var(--muted);">Analisando...</div></div>`;
+  setTimeout(() => {
+    el.innerHTML = `<div class="meta-result">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--green);">✅ Metadados removidos: ${file.name}</div>
+      <div class="meta-item"><span class="mk">Software gerador</span><span class="mv clean">✓ Removido</span></div>
+      <div class="meta-item"><span class="mk">Data de criação</span><span class="mv clean">✓ Removida</span></div>
+      <div class="meta-item"><span class="mk">Localização GPS</span><span class="mv clean">✓ Removida</span></div>
+      <div class="meta-item"><span class="mk">ID único (UUID)</span><span class="mv clean">✓ Removido</span></div>
+      <div class="meta-item"><span class="mk">Tamanho</span><span class="mv">${(file.size/1024/1024).toFixed(1)} MB</span></div>
+    </div>
+    <button class="btn-tool" onclick="toast('Download iniciado!','success')">⬇️ Baixar Vídeo Limpo</button>`;
+  }, 2000);
+}
+
+// ============ ESTRATÉGIAS ============
+function renderEstrategias() {
+  const el = document.getElementById('estrategiasContent');
+  if (!canAccess('pack')) { el.innerHTML = lockOverlay('pack'); return; }
+  const items = [
+    { tag:'12 táticas exclusivas', title:'🔒 Estratégias Secretas', desc:'O que os top afiliados nunca ensinam.', lista:['🪞 Efeito Espelho — copie o que viralizou','🎯 Comentário Isca — venda no vídeo de outro','👑 Produto Herói — 1 produto, 7 ângulos','🦠 Parasita de Viral'] },
+    { tag:'Passo a passo', title:'⚡ Primeira Venda em 48h', desc:'Guia exato para quem ainda não vendeu.', lista:['H0-H4 — Escolha o produto certo','H4-H12 — Estrutura do vídeo que converte','H12-H24 — Poste em todas as plataformas','H24-H48 — O que fazer se não vendeu'] },
+    { tag:'Canal mais quente', title:'💬 Grupos WhatsApp Cheios', desc:'Post no Insta chega pra 3%. No grupo, 100%.', lista:['Onde achar compradores de achadinho','Mensagens prontas que convertem','Rotina diária de postagem','Boost com R$10/dia no Instagram'] },
+  ];
+  el.innerHTML = items.map(s => `<div class="strat-card">
+    <div class="stag">${s.tag}</div><h3>${s.title}</h3><p>${s.desc}</p>
+    <ul class="strat-list">${s.lista.map(l => `<li>${l}</li>`).join('')}</ul>
+    <button class="btn-tool" style="margin-top:14px;font-size:13px;padding:11px;" onclick="toast('PDF disponível!','success')">📥 Baixar PDF</button>
+  </div>`).join('');
+}
+
+// ============ SUPORTE ============
+const faqs = [
+  ['O que é o Videx?', 'Plataforma com vídeos, fotos e IAs reais para afiliados Shopee venderem mais.'],
+  ['Como funciona o Radar Shopee?', 'Conecta direto na API da Shopee e traz produtos com vídeo, imagem, preço e comissão reais.'],
+  ['Os vídeos têm marca d\'água?', 'Não. Todos os downloads são limpos, sem marca d\'água.'],
+  ['O Premium é mensal?', 'Sim. Por R$5,90/mês — ou Pack Completo vitalício por R$97.'],
+  ['Quando recebo acesso?', 'Imediatamente após o pagamento confirmado.'],
+];
+const depoimentos = [
+  { nome: 'Mariana S.', txt: 'Em 2 dias já fiz 14 vendas usando só vídeos do Videx!' },
+  { nome: 'Lucas A.', txt: 'Produtos reais da Shopee com vídeo e comissão — incrível!' },
+  { nome: 'Juliana M.', txt: 'A IA gera a legenda pronta. Só copio e posto.' },
+  { nome: 'Rafael C.', txt: 'O Mentor me ajudou a escolher produtos que realmente vendem.' },
+];
+
+function renderSuporteExtras() {
+  const faqEl = document.getElementById('faqList');
+  const depEl = document.getElementById('depList');
+  if (faqEl && !faqEl.innerHTML) faqEl.innerHTML = faqs.map(([q,a]) => `<div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">${q}<span class="arr">▼</span></div><div class="faq-a">${a}</div></div>`).join('');
+  if (depEl && !depEl.innerHTML) depEl.innerHTML = depoimentos.map(d => `<div class="dep-card"><div class="dep-stars">⭐⭐⭐⭐⭐</div><div class="dep-text">"${d.txt}"</div><div class="dep-author">— ${d.nome}</div></div>`).join('');
+}
+
+// ============ LOGIN ============
+function openLogin() { document.getElementById('loginModal').classList.remove('hidden'); }
+function closeLogin() { document.getElementById('loginModal').classList.add('hidden'); }
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email || !email.includes('@')) { toast('Digite um e-mail válido', 'error'); return; }
+  const u = users.find(x => x.email.toLowerCase() === email.toLowerCase());
+  if (u) { setPlano(u.plano); toast(`Bem-vindo, ${u.nome.split(' ')[0]}!`, 'success'); }
+  else toast('E-mail não encontrado.', 'error');
+  closeLogin();
+}
+document.getElementById('loginModal').addEventListener('click', function(e) { if (e.target === this) closeLogin(); });
+
+// ============ ADMIN ============
+function renderAdmin() {
+  const stats = document.getElementById('adminStats');
+  const ativos = users.filter(u => u.status === 'active').length;
+  const pagos = users.filter(u => u.plano !== 'free').length;
+  stats.innerHTML = `
+    <div class="admin-stat"><div class="as-val">${users.length}</div><div class="as-lbl">Total</div></div>
+    <div class="admin-stat"><div class="as-val" style="color:var(--green);">${ativos}</div><div class="as-lbl">Ativos</div></div>
+    <div class="admin-stat"><div class="as-val" style="color:var(--purple);">${pagos}</div><div class="as-lbl">Pagos</div></div>
+    <div class="admin-stat"><div class="as-val" style="color:var(--accent);">${users.filter(u=>u.status==='expired').length}</div><div class="as-lbl">Expirados</div></div>`;
+  const q = (document.getElementById('adminSearch')?.value || '').toLowerCase();
+  const filtered = users.filter(u => u.nome.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+  const pl = { free:'Free', premium:'Premium', pack:'Pack' };
+  const st = { active:'Ativo', pending:'Pendente', expired:'Expirado' };
+  document.getElementById('adminTbody').innerHTML = filtered.map(u => `<tr>
+    <td><div class="user-row-name">${u.nome}</div><div class="user-row-email">${u.email}</div></td>
+    <td><span class="badge ${u.plano}">${pl[u.plano]}</span></td>
+    <td><span class="badge ${u.status}">${st[u.status]}</span></td>
+    <td><div class="admin-actions">
+      <button class="btn-admin lib" onclick="liberarUser(${u.id})">Liberar</button>
+      <button class="btn-admin" onclick="editUser(${u.id})">Editar</button>
+      <button class="btn-admin rev" onclick="revogarUser(${u.id})">Revogar</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function liberarUser(id) { const u=users.find(x=>x.id===id); u.status='active'; if(u.plano==='free')u.plano='premium'; renderAdmin(); toast(`Liberado: ${u.nome.split(' ')[0]}!`,'success'); }
+function revogarUser(id) { const u=users.find(x=>x.id===id); u.status='expired'; renderAdmin(); toast('Licença revogada.','error'); }
+function openAddUser() { editUserId=null; document.getElementById('addUserTitle').textContent='Adicionar Usuário'; ['auNome','auEmail'].forEach(id=>document.getElementById(id).value=''); document.getElementById('auPlano').value='free'; document.getElementById('auStatus').value='active'; document.getElementById('addUserModal').classList.remove('hidden'); }
+function editUser(id) { editUserId=id; const u=users.find(x=>x.id===id); document.getElementById('addUserTitle').textContent='Editar Usuário'; document.getElementById('auNome').value=u.nome; document.getElementById('auEmail').value=u.email; document.getElementById('auPlano').value=u.plano; document.getElementById('auStatus').value=u.status; document.getElementById('addUserModal').classList.remove('hidden'); }
+function closeAddUser() { document.getElementById('addUserModal').classList.add('hidden'); }
+function saveUser() {
+  const nome=document.getElementById('auNome').value.trim(); const email=document.getElementById('auEmail').value.trim();
+  const plano=document.getElementById('auPlano').value; const status=document.getElementById('auStatus').value;
+  if(!nome||!email){toast('Preencha nome e e-mail!','error');return;}
+  if(editUserId){const u=users.find(x=>x.id===editUserId);Object.assign(u,{nome,email,plano,status});toast(`${nome} atualizado!`,'success');}
+  else{users.push({id:nextId++,nome,email,plano,status});toast(`${nome} adicionado!`,'success');}
+  closeAddUser(); renderAdmin();
+}
+document.getElementById('addUserModal').addEventListener('click', function(e) { if(e.target===this)closeAddUser(); });
+
+// ============ TOAST ============
+let toastTimer;
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
