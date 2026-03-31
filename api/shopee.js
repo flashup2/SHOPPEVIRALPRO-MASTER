@@ -17,28 +17,30 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: '"url" obrigatório' });
   }
 
-  let query;
+  let rawQuery;
   if (action === 'search') {
-    query = `{"query":"{productOfferV2(listType:0,sortType:${Number(sortType)},limit:${Number(limit)},keyword:\\"${keyword}\\"){nodes{itemId shopId productName priceMin priceMax commissionRate commission sales imageUrl videoUrl shopName offerLink productLink}pageInfo{hasNextPage endCursor}}}"}`;
+    rawQuery = `{ productOfferV2(listType: 0, sortType: ${Number(sortType)}, limit: ${Number(limit)}, keyword: "${keyword}") { nodes { itemId shopId productName priceMin priceMax commissionRate commission sales imageUrl videoUrl shopName offerLink productLink } pageInfo { hasNextPage endCursor } } }`;
   } else if (action === 'generate_link') {
-    query = `{"query":"{generateShortLink(input:{originUrl:\\"${url}\\",subId:\\"videx\\"}){shortLink longLink}}"}`;
+    rawQuery = `{ generateShortLink(input: { originUrl: "${url}", subId: "videx" }) { shortLink longLink } }`;
   } else {
     return res.status(400).json({ error: `Ação inválida: ${action}` });
   }
 
-  // Payload é a string JSON literal — usada tanto no body quanto na assinatura
-  const payload   = query;
-  const timestamp = Math.floor(Date.now() / 1000).toString();
+  // Monta o objeto, serializa e remove quebras de linha — igual ao exemplo Python que funciona
+  const bodyObj = { query: rawQuery, operationName: null, variables: null };
+  const payload = JSON.stringify(bodyObj).replace(/\n/g, '');
 
-  // SHA256(AppId + Timestamp + Payload + Secret) — sem separadores
-  const base = APP_ID + timestamp + payload + SECRET;
-  const sign = crypto.createHash('sha256').update(base, 'utf8').digest('hex');
+  const timestamp = String(Math.floor(Date.now() / 1000));
+
+  // SHA256(AppId + Timestamp + Payload + Secret)
+  const factor = APP_ID + timestamp + payload + SECRET;
+  const sign   = crypto.createHash('sha256').update(factor).digest('hex');
 
   try {
     const upstream = await fetch(SHOPEE_BASE, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type':  'application/json',
         'Authorization': `SHA256 Credential=${APP_ID},Timestamp=${timestamp},Signature=${sign}`,
       },
       body: payload,
