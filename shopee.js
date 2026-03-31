@@ -1,8 +1,9 @@
 // api/shopee.js — Vercel Serverless Function
 const crypto = require('crypto');
+const fetch  = require('node-fetch');
 
-const APP_ID  = '18341840528';
-const SECRET  = 'TQQACKSDJ4QUYI2HPNBBA5IWTSFVUCA3';
+const APP_ID      = '18341840528';
+const SECRET      = 'TQQACKSDJ4QUYI2HPNBBA5IWTSFVUCA3';
 const SHOPEE_BASE = 'https://open-api.affiliate.shopee.com.br/graphql';
 
 function generateSign(timestamp, payload) {
@@ -17,12 +18,23 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const { action, keyword = 'achados', limit = 20, sortType = 2, url } = req.query;
+  const {
+    action,
+    keyword  = 'achados',
+    limit    = '20',
+    sortType = '2',
+    url,
+  } = req.query;
+
+  // Validação da action generate_link
+  if (action === 'generate_link' && !url) {
+    return res.status(400).json({ error: 'Parâmetro "url" é obrigatório para generate_link' });
+  }
 
   const queries = {
     search: {
       query: `{
-        productOfferV2(listType: 0, sortType: ${sortType}, limit: ${Number(limit)}, keyword: "${keyword}") {
+        productOfferV2(listType: 0, sortType: ${Number(sortType)}, limit: ${Number(limit)}, keyword: "${keyword}") {
           nodes {
             itemId shopId productName
             priceMin priceMax
@@ -46,22 +58,28 @@ module.exports = async function handler(req, res) {
   const body = queries[action];
   if (!body) return res.status(400).json({ error: `Ação inválida: ${action}` });
 
-  const payload = JSON.stringify(body);
+  const payload   = JSON.stringify(body);
   const timestamp = Math.floor(Date.now() / 1000).toString();
-  const sign = generateSign(timestamp, payload);
+  const sign      = generateSign(timestamp, payload);
 
   try {
     const upstream = await fetch(SHOPEE_BASE, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type':  'application/json',
         'Authorization': `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${sign}`,
       },
       body: payload,
     });
+
+    if (!upstream.ok) {
+      const text = await upstream.text();
+      return res.status(upstream.status).json({ error: 'Erro da API Shopee', detail: text });
+    }
+
     const data = await upstream.json();
     return res.status(200).json(data);
   } catch (err) {
-    return res.status(500).json({ error: 'Erro ao chamar API Shopee', detail: err.message });
+    return res.status(500).json({ error: 'Erro interno', detail: err.message });
   }
 };
