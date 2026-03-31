@@ -6,12 +6,9 @@ const SECRET      = 'TQQACKSDJ4QUYI2HPNBBA5IWTSFVUCA3';
 const SHOPEE_BASE = 'https://open-api.affiliate.shopee.com.br/graphql';
 
 function generateSign(timestamp, payload) {
-  // Shopee BR: HMAC-SHA256(APP_ID + timestamp + payload, SECRET)
-  const base = APP_ID + timestamp + payload;
-  return crypto
-    .createHmac('sha256', Buffer.from(SECRET, 'utf8'))
-    .update(Buffer.from(base, 'utf8'))
-    .digest('hex');
+  // Formato correto Shopee Affiliate: SHA256(APP_ID + timestamp + payload + SECRET)
+  const base = APP_ID + timestamp + payload + SECRET;
+  return crypto.createHash('sha256').update(base).digest('hex');
 }
 
 module.exports = async function handler(req, res) {
@@ -45,7 +42,6 @@ module.exports = async function handler(req, res) {
   const body = queries[action];
   if (!body) return res.status(400).json({ error: `Ação inválida: ${action}` });
 
-  // Payload compacto (sem espaços extras) — obrigatório para assinatura correta
   const payload   = JSON.stringify(body);
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const sign      = generateSign(timestamp, payload);
@@ -55,7 +51,7 @@ module.exports = async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type':  'application/json',
-        'Authorization': `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${sign}`,
+        'Authorization': `SHA256 Credential=${APP_ID},Timestamp=${timestamp},Signature=${sign}`,
       },
       body: payload,
     });
@@ -63,7 +59,6 @@ module.exports = async function handler(req, res) {
     const text = await upstream.text();
     let data;
     try { data = JSON.parse(text); } catch { data = { raw: text }; }
-
     return res.status(200).json(data);
   } catch (err) {
     return res.status(500).json({ error: 'Erro interno', detail: err.message });
